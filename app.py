@@ -17,10 +17,31 @@ SHEET_ID = "1vVuBkpo29YjDjNR5Pn_xFLwS52yiGri46ZPOCSTkRTA"
 BASE_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq"
 ANNUAL_SHEET = "Emissões Anuais e Totais"
 IBGE_SHEET = "Dados IBGE 2022"
-COORDINATES_SHEET = "Página26"
 YEARS = list(range(2010, 2025))
 
 PALETTE = ["#0b6e69", "#e07a5f", "#3d5a80", "#f2cc8f", "#6a994e", "#bc4749"]
+MUNICIPAL_COORDINATES = {
+    "Americana": (-22.7392463, -47.3306032),
+    "Artur Nogueira": (-22.572737, -47.172679),
+    "Campinas": (-22.9056391, -47.059564),
+    "Cosmópolis": (-22.6437398, -47.1972086),
+    "Engenheiro Coelho": (-22.4896659, -47.2119005),
+    "Holambra": (-22.6332028, -47.0545305),
+    "Hortolândia": (-22.8620175, -47.2164219),
+    "Indaiatuba": (-23.0908356, -47.2180677),
+    "Itatiba": (-23.0055542, -46.8397726),
+    "Jaguariúna": (-22.70374, -46.985062),
+    "Monte Mor": (-22.945043, -47.312182),
+    "Morungaba": (-22.88, -46.79167),
+    "Nova Odessa": (-22.7805746, -47.2993805),
+    "Paulínia": (-22.7630391, -47.1532213),
+    "Pedreira": (-22.741347, -46.894846),
+    "Santa Bárbara d'Oeste": (-22.7542539, -47.4137884),
+    "Santo Antônio de Posse": (-22.6053304, -46.9197291),
+    "Sumaré": (-22.8217964, -47.267105),
+    "Valinhos": (-22.97056, -46.99583),
+    "Vinhedo": (-23.0298535, -46.9749847),
+}
 
 
 def sheet_url(sheet_name: str) -> str:
@@ -81,12 +102,12 @@ def load_ibge_data() -> pd.DataFrame:
 
 @st.cache_data(ttl=3600, show_spinner=False)
 def load_coordinates() -> pd.DataFrame:
-    frame = tidy_columns(pd.read_csv(sheet_url(COORDINATES_SHEET)))
-    frame = frame.iloc[:, :5]
-    frame.columns = ["Município", "Acumulado (Mt)", "Latitude", "Longitude", "Acumulado (Mt) calculado"]
-    for column in frame.columns[1:]:
-        frame[column] = frame[column].map(parse_brazilian_number)
-    return frame[["Município", "Latitude", "Longitude"]]
+    return pd.DataFrame(
+        [
+            {"Município": municipality, "Latitude": latitude, "Longitude": longitude}
+            for municipality, (latitude, longitude) in MUNICIPAL_COORDINATES.items()
+        ]
+    )
 
 
 def format_tonnes(value: float) -> str:

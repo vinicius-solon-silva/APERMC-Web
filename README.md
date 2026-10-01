@@ -21,7 +21,7 @@ docker run --rm -p 8501:8501 apermc-web
 Acesse a aplicação em <http://localhost:8501>.
 
 
-A aplicação consulta as abas públicas da planilha de origem em tempo de execução. Os dados ficam em cache por uma hora; o botão **Atualizar dados** limpa o cache e consulta a planilha novamente.
+A aplicação consulta as abas públicas de emissões e indicadores IBGE da planilha em tempo de execução. As coordenadas de referência dos municípios, consultadas via Photon com dados do OpenStreetMap, são mantidas na aplicação, independentemente das abas auxiliares da planilha. Os dados consultados ficam em cache por uma hora; o botão **Atualizar dados** limpa o cache e consulta a planilha novamente.
 
 ## Visões disponíveis
 
