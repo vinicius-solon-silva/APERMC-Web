@@ -1,0 +1,45 @@
+[project]
+name = "apermc-web"
+version = "0.1.0"
+description = "Painel de análise das emissões do setor energético na Região Metropolitana de Campinas"
+requires-python = ">=3.10,<4"
+dependencies = [
+    "pandas>=2.2,<3.1",
+    "plotly>=6.0,<7.1",
+    "streamlit>=1.42,<2.0",
+]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    # Single-letter variable names are common and fine for data pipelines
+    "N806",   # Variable in function should be lowercase
+    "N816",   # Variable in global scope should be mixedCase
+    # Local variable assigned but unused (common in data reshaping)
+    "F841",
+    # Do not require docstrings everywhere
+    "D100", "D101", "D102", "D103", "D104", "D105", "D106", "D107",
+    # Allow bare except (the app already wraps the entry block in a try)
+    "BLE001",
+    # Ignore checks that conflict with our formatting choices
+    "E501",   # Line length — we rely on ruff format instead
+    "T201",   # print() calls allowed (dev convenience)
+    # Not needed for a single-file-style app
+    "SIM102", # use a single if instead of nested
+]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
+
+[tool.bandit]
+targets = ["app.py", "utils.py", "tests"]
+skips = []
+

@@ -1,6 +1,16 @@
-from io import BytesIO
-from urllib.parse import urlencode
-
+from utils import (
+    ANNUAL_SHEET,
+    BASE_URL,
+    IBGE_SHEET,
+    MUNICIPAL_COORDINATES,
+    PALETTE,
+    YEARS,
+    format_percent,
+    format_tonnes,
+    parse_brazilian_number,
+    sheet_url,
+    tidy_columns,
+)
 import pandas as pd
 import plotly.express as px
 import streamlit as st
@@ -12,59 +22,6 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
-
-SHEET_ID = "1vVuBkpo29YjDjNR5Pn_xFLwS52yiGri46ZPOCSTkRTA"
-BASE_URL = f"https://docs.google.com/spreadsheets/d/{SHEET_ID}/gviz/tq"
-ANNUAL_SHEET = "Emissões Anuais e Totais"
-IBGE_SHEET = "Dados IBGE 2022"
-YEARS = list(range(2010, 2025))
-
-PALETTE = ["#0b6e69", "#e07a5f", "#3d5a80", "#f2cc8f", "#6a994e", "#bc4749"]
-MUNICIPAL_COORDINATES = {
-    "Americana": (-22.7392463, -47.3306032),
-    "Artur Nogueira": (-22.572737, -47.172679),
-    "Campinas": (-22.9056391, -47.059564),
-    "Cosmópolis": (-22.6437398, -47.1972086),
-    "Engenheiro Coelho": (-22.4896659, -47.2119005),
-    "Holambra": (-22.6332028, -47.0545305),
-    "Hortolândia": (-22.8620175, -47.2164219),
-    "Indaiatuba": (-23.0908356, -47.2180677),
-    "Itatiba": (-23.0055542, -46.8397726),
-    "Jaguariúna": (-22.70374, -46.985062),
-    "Monte Mor": (-22.945043, -47.312182),
-    "Morungaba": (-22.88, -46.79167),
-    "Nova Odessa": (-22.7805746, -47.2993805),
-    "Paulínia": (-22.7630391, -47.1532213),
-    "Pedreira": (-22.741347, -46.894846),
-    "Santa Bárbara d'Oeste": (-22.7542539, -47.4137884),
-    "Santo Antônio de Posse": (-22.6053304, -46.9197291),
-    "Sumaré": (-22.8217964, -47.267105),
-    "Valinhos": (-22.97056, -46.99583),
-    "Vinhedo": (-23.0298535, -46.9749847),
-}
-
-
-def sheet_url(sheet_name: str) -> str:
-    query = urlencode({"tqx": "out:csv", "sheet": sheet_name})
-    return f"{BASE_URL}?{query}"
-
-
-def parse_brazilian_number(value: object) -> float:
-    if pd.isna(value):
-        return float("nan")
-    text = str(value).strip().replace("\u00a0", "")
-    if not text:
-        return float("nan")
-    if "," in text:
-        text = text.replace(".", "").replace(",", ".")
-    else:
-        text = text.replace(".", "")
-    return pd.to_numeric(text, errors="coerce")
-
-
-def tidy_columns(frame: pd.DataFrame) -> pd.DataFrame:
-    frame = frame.loc[:, ~frame.columns.astype(str).str.match(r"^Unnamed")]
-    return frame.dropna(axis=1, how="all").dropna(axis=0, how="all")
 
 
 @st.cache_data(ttl=3600, show_spinner=False)
@@ -108,14 +65,6 @@ def load_coordinates() -> pd.DataFrame:
             for municipality, (latitude, longitude) in MUNICIPAL_COORDINATES.items()
         ]
     )
-
-
-def format_tonnes(value: float) -> str:
-    return f"{value:,.0f}".replace(",", "X").replace(".", ",").replace("X", ".")
-
-
-def format_percent(value: float) -> str:
-    return f"{value:.1f}%".replace(".", ",")
 
 
 try:

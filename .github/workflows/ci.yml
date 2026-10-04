@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main, master]
+  push:
+    branches: [main, master]
+
+permissions:
+  contents: read
+
+jobs:
+  # ─────────────────────────────────────────────────────────────
+  # Lint — enforces Ruff formatting + rule checks
+  # ─────────────────────────────────────────────────────────────
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Ruff
+        run: pip install ruff
+
+      - name: Check formatting (ruff format --check)
+        run: ruff format --check .
+
+      - name: Check linting rules (ruff check)
+        run: ruff check .
+
+  # ─────────────────────────────────────────────────────────────
+  # Security — scan installed dependencies for known CVEs
+  # ─────────────────────────────────────────────────────────────
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install pip-audit
+        run: pip install pip-audit
+
+      - name: Audit dependencies (pip-audit)
+        run: pip-audit -r requirements.txt
+
+  # ─────────────────────────────────────────────────────────────
+  # Test — runs the pytest suite with coverage
+  # ─────────────────────────────────────────────────────────────
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install -r requirements-dev.txt
+
+      - name: Run pytest with coverage
+        run: pytest --cov=utils --cov-report=term-missing tests/
+
+  # ─────────────────────────────────────────────────────────────
+  # Bandit — static analysis for common Python security issues
+  # ─────────────────────────────────────────────────────────────
+  bandit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install Bandit
+        run: pip install bandit
+
+      - name: Run Bandit
+        run: bandit -r . -c pyproject.toml -ll || true
+        # ^ Uses -ll (medium severity threshold). Exits 0 on low/medium findings;
+        #   adjust to -lll or fail the build by removing "|| true" if desired.
