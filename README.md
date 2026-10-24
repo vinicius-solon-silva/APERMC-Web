@@ -27,14 +27,14 @@ O dashboard consulta as abas públicas de emissões e indicadores IBGE da planil
 
 ## Materiais e configuração
 
-- Logos institucionais: arquivos `fapesp.png`, `cps.png` e `fatec_campinas.png` em `assets/logos/` (formatos PNG, JPG, JPEG ou WebP).
+- Logos institucionais: `assets/logos/fapesp_logo.png`, `assets/logos/cps_logo.png` e `assets/logos/fatec-campinas_logo.png`.
 - Pôsteres e banners: `assets/documents/posters/`.
 - Artigos: `assets/documents/articles/`.
 - Slides: `assets/documents/slides/`.
 - Fotos de eventos: `assets/events/` (PNG, JPG, JPEG ou WebP).
-- Configure `LATTES_URL`, `ORCID_URL`, `LINKEDIN_URL` e `ACADEMIC_EMAIL` como variáveis de ambiente ou chaves equivalentes em `.streamlit/secrets.toml`.
+- Os links do Currículo Lattes e LinkedIn e o e-mail profissional da pesquisadora estão cadastrados na página Perfil e contato. Configure `ORCID_URL` como variável de ambiente ou chave equivalente em `.streamlit/secrets.toml` caso queira exibir o ORCID.
 
-O portal exibe os nomes institucionais como fallback até que as logos oficiais sejam adicionadas. Links acadêmicos e e-mail não são inventados e permanecem ocultos enquanto não forem configurados.
+Os nomes das instituições são exibidos em linhas próprias com links para seus sites oficiais.
 
 ## Citação
 
