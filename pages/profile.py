@@ -5,9 +5,9 @@ import streamlit as st
 from portal import get_setting
 
 PROFILE_LINKS = {
-    "Currículo Lattes": "lattes_url",
+    "Currículo Lattes": "http://lattes.cnpq.br/8699461135793030",
+    "LinkedIn": "https://www.linkedin.com/in/ana-paula-marsarioli-2aa6a8131/",
     "ORCID": "orcid_url",
-    "LinkedIn": "linkedin_url",
 }
 
 st.title("Perfil e contato")
@@ -15,17 +15,14 @@ st.subheader("Ana Paula Marsarioli")
 st.write("Pesquisadora de Iniciação Científica · Projeto APERMC-Web")
 st.write("Orientador: Prof. Dr. André Luiz da Conceição")
 
-configured_links = [(label, get_setting(setting)) for label, setting in PROFILE_LINKS.items()]
-for label, url in configured_links:
+for label, setting in PROFILE_LINKS.items():
+    url = get_setting(setting) if label == "ORCID" else setting
     if url:
         st.link_button(label, url)
 
-if not any(url for _, url in configured_links):
-    st.caption("Links acadêmicos serão exibidos após o cadastro dos endereços oficiais.")
+if not get_setting("orcid_url"):
+    st.caption("ORCID não informado.")
 
 st.subheader("Contato acadêmico")
-academic_email = get_setting("academic_email")
-if academic_email:
-    st.markdown(f"E-mail: [{academic_email}](mailto:{academic_email})")
-else:
-    st.caption("O e-mail acadêmico será exibido após sua configuração.")
+academic_email = "apmarsarioli@gmail.com"
+st.markdown(f"E-mail: [{academic_email}](mailto:{academic_email})")

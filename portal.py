@@ -1,5 +1,7 @@
 """Shared visual components and public-portal asset configuration."""
 
+import base64
+import html
 import os
 from pathlib import Path
 
@@ -72,12 +74,36 @@ def render_header() -> None:
             font-weight: 700;
             text-transform: uppercase;
         }
-        .institution-wordmark {
-            border-left: 3px solid var(--portal-blue);
-            color: var(--portal-ink);
-            font-size: .9rem;
+        .institution-link {
+            align-items: center;
+            background: #fff;
+            border: 1px solid #d6dfdf;
+            border-radius: 4px;
+            box-sizing: border-box;
+            color: var(--portal-ink) !important;
+            display: grid;
+            gap: 12px;
+            grid-template-columns: 58px minmax(0, 1fr);
+            margin: 0 0 8px;
+            min-height: 58px;
+            padding: 6px 10px;
+            text-decoration: none !important;
+            width: 100%;
+        }
+        .institution-link:hover {
+            border-color: var(--portal-blue);
+            color: var(--portal-blue) !important;
+        }
+        .institution-link img {
+            height: 42px;
+            object-fit: contain;
+            width: 58px;
+        }
+        .institution-link span {
+            font-size: .85rem;
             font-weight: 700;
-            padding: .25rem .55rem;
+            text-align: left;
+            white-space: nowrap;
         }
         </style>
         """,
@@ -100,27 +126,30 @@ def render_header() -> None:
         st.caption("Prof. Dr. André Luiz da Conceição · orientador")
         st.divider()
         st.caption("Instituições parceiras")
-        logo_columns = st.columns(3)
-        for column, (name, label) in zip(
-            logo_columns,
-            (("fapesp", "FAPESP"), ("cps", "CPS"), ("fatec_campinas", "FATEC Campinas")),
-            strict=True,
-        ):
-            logo = next(
-                (
-                    path
-                    for extension in ("png", "jpg", "jpeg", "webp")
-                    if (path := ASSET_DIRECTORIES["logos"] / f"{name}.{extension}").is_file()
-                ),
-                None,
+        institutions = (
+            ("FAPESP", "fapesp_logo.png", "https://fapesp.br/"),
+            ("CPS", "cps_logo.png", "https://www.cps.sp.gov.br/"),
+            (
+                "FATEC Campinas",
+                "fatec-campinas_logo.png",
+                "https://fateccampinas.com.br/",
+            ),
+        )
+        for institution_name, logo_filename, institution_url in institutions:
+            logo_path = ASSET_DIRECTORIES["logos"] / logo_filename
+            image_markup = ""
+            if logo_path.is_file():
+                encoded_logo = base64.b64encode(logo_path.read_bytes()).decode("ascii")
+                image_markup = (
+                    f'<img src="data:image/png;base64,{encoded_logo}" '
+                    f'alt="Logo {html.escape(institution_name)}">'
+                )
+            st.markdown(
+                f'<a class="institution-link" href="{html.escape(institution_url)}" '
+                f'target="_blank" rel="noopener noreferrer">{image_markup}'
+                f"<span>{html.escape(institution_name)}</span></a>",
+                unsafe_allow_html=True,
             )
-            with column:
-                if logo:
-                    st.image(str(logo), width="stretch")
-                else:
-                    st.markdown(
-                        f'<div class="institution-wordmark">{label}</div>', unsafe_allow_html=True
-                    )
 
 
 def render_footer() -> None:

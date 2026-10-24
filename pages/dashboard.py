@@ -49,21 +49,29 @@ st.caption(
     "séries do setor energético e indicadores públicos; não incorpora questionários ou entrevistas."
 )
 
-with st.sidebar:
+with st.container(border=True):
     st.markdown("**Filtros do dashboard energético**")
-    selected_municipalities = st.multiselect(
-        "Municípios",
-        municipalities,
-        default=municipalities[:3],
-        help="Selecione municípios para comparar as séries públicas de emissões do setor de energia.",
+    municipality_column, map_column, period_column, refresh_column = st.columns(
+        [2.4, 1.1, 1.8, 0.9]
     )
-    show_map_detail = st.checkbox("Detalhar mapa", value=True)
-    selected_years = st.slider("Período", min(YEARS), max(YEARS), (min(YEARS), max(YEARS)))
-    if st.button("Atualizar dados públicos", width="stretch", type="secondary"):
-        load_annual_data.clear()
-        load_ibge_data.clear()
-        load_coordinates.clear()
-        st.rerun()
+    with municipality_column:
+        selected_municipalities = st.multiselect(
+            "Municípios",
+            municipalities,
+            default=municipalities[:3],
+            help="Selecione municípios para comparar as séries públicas de emissões do setor de energia.",
+        )
+    with map_column:
+        show_map_detail = st.checkbox("Detalhar mapa", value=True)
+    with period_column:
+        selected_years = st.slider("Período", min(YEARS), max(YEARS), (min(YEARS), max(YEARS)))
+    with refresh_column:
+        st.markdown("\u00a0")
+        if st.button("Atualizar", width="stretch", type="secondary"):
+            load_annual_data.clear()
+            load_ibge_data.clear()
+            load_coordinates.clear()
+            st.rerun()
     st.caption("Fonte: planilha pública APERMC · cache de 1 hora")
 
 view_years = list(range(selected_years[0], selected_years[1] + 1))
