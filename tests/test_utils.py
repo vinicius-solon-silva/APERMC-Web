@@ -58,11 +58,13 @@ class TestParseBrazilianNumber:
 
 class TestTidyColumns:
     def test_drops_unnamed_columns(self):
-        df = pd.DataFrame({
-            "A": [1, 2, 3],
-            "Unnamed: 0": ["x", "y", "z"],
-            "Unnamed: 1": ["p", "q", "r"],
-        })
+        df = pd.DataFrame(
+            {
+                "A": [1, 2, 3],
+                "Unnamed: 0": ["x", "y", "z"],
+                "Unnamed: 1": ["p", "q", "r"],
+            }
+        )
         result = tidy_columns(df)
         assert "Unnamed" not in result.columns
         assert list(result.columns) == ["A"]

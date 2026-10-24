@@ -77,7 +77,9 @@ except Exception as error:
     st.stop()
 
 municipalities = sorted(annual["Município"].unique())
-municipalities = [name for name in municipalities if name not in {"Acumulado do Período", "Outras cidades da RMC"}]
+municipalities = [
+    name for name in municipalities if name not in {"Acumulado do Período", "Outras cidades da RMC"}
+]
 annual = annual[annual["Município"].isin(municipalities)].copy()
 
 summary = annual.groupby("Município", as_index=False).agg(
@@ -87,8 +89,12 @@ summary = annual.groupby("Município", as_index=False).agg(
 )
 first_year = annual[annual["Ano"] == min(YEARS)].set_index("Município")["Emissões"]
 last_year = annual[annual["Ano"] == max(YEARS)].set_index("Município")["Emissões"]
-summary["Variação no período"] = summary["Município"].map(last_year).div(summary["Município"].map(first_year)).sub(1).mul(100)
-summary = summary.merge(ibge, on="Município", how="left").merge(coordinates, on="Município", how="left")
+summary["Variação no período"] = (
+    summary["Município"].map(last_year).div(summary["Município"].map(first_year)).sub(1).mul(100)
+)
+summary = summary.merge(ibge, on="Município", how="left").merge(
+    coordinates, on="Município", how="left"
+)
 
 st.markdown(
     """
@@ -113,7 +119,9 @@ st.markdown(
 
 with st.sidebar:
     st.markdown("### APERMC-Web")
-    st.caption("Painel de análise das emissões do setor energético na Região Metropolitana de Campinas")
+    st.caption(
+        "Painel de análise das emissões do setor energético na Região Metropolitana de Campinas"
+    )
     st.divider()
     st.markdown("**Filtros de análise**")
     selected_municipalities = st.multiselect(
@@ -138,7 +146,11 @@ with st.sidebar:
     st.caption("Fonte: planilha pública APERMC · cache de 1 hora")
 
 filtered = annual[annual["Ano"].isin(view_years)].copy()
-period_summary = filtered.groupby("Município", as_index=False)["Emissões"].sum().rename(columns={"Emissões": "Emissões no período"})
+period_summary = (
+    filtered.groupby("Município", as_index=False)["Emissões"]
+    .sum()
+    .rename(columns={"Emissões": "Emissões no período"})
+)
 
 st.markdown(
     """
@@ -154,7 +166,9 @@ st.markdown(
 period_total = filtered["Emissões"].sum()
 period_peak = filtered.groupby("Ano")["Emissões"].sum().idxmax()
 period_low = filtered.groupby("Ano")["Emissões"].sum().idxmin()
-selected_total = period_summary[period_summary["Município"].isin(selected_municipalities)]["Emissões no período"].sum()
+selected_total = period_summary[period_summary["Município"].isin(selected_municipalities)][
+    "Emissões no período"
+].sum()
 
 metric_columns = st.columns(4)
 metric_columns[0].metric("Emissões no recorte", f"{format_tonnes(period_total)} tCO₂e")
@@ -162,32 +176,77 @@ metric_columns[1].metric("Municípios observados", f"{len(municipalities)}")
 metric_columns[2].metric("Ano de maior emissão", f"{int(period_peak)}")
 metric_columns[3].metric("Municípios destacados", f"{format_tonnes(selected_total)} tCO₂e")
 
-st.markdown('<div class="section-label">Leitura do período selecionado</div>', unsafe_allow_html=True)
+st.markdown(
+    '<div class="section-label">Leitura do período selecionado</div>', unsafe_allow_html=True
+)
 left, right = st.columns([1.55, 1])
 with left:
     yearly = filtered.groupby("Ano", as_index=False)["Emissões"].sum()
-    figure = px.area(yearly, x="Ano", y="Emissões", markers=True, color_discrete_sequence=[PALETTE[0]])
-    figure.update_traces(line_width=3, fillcolor="rgba(11,110,105,.14)", hovertemplate="%{x}: %{y:,.0f} tCO₂e<extra></extra>")
-    figure.update_layout(height=370, margin=dict(l=0, r=0, t=20, b=0), yaxis_title="tCO₂e", xaxis_title=None, hovermode="x unified")
+    figure = px.area(
+        yearly, x="Ano", y="Emissões", markers=True, color_discrete_sequence=[PALETTE[0]]
+    )
+    figure.update_traces(
+        line_width=3,
+        fillcolor="rgba(11,110,105,.14)",
+        hovertemplate="%{x}: %{y:,.0f} tCO₂e<extra></extra>",
+    )
+    figure.update_layout(
+        height=370,
+        margin=dict(l=0, r=0, t=20, b=0),
+        yaxis_title="tCO₂e",
+        xaxis_title=None,
+        hovermode="x unified",
+    )
     st.plotly_chart(figure, width="stretch", config={"displayModeBar": False})
 with right:
     ranking = period_summary.sort_values("Emissões no período", ascending=True).tail(10)
-    figure = px.bar(ranking, x="Emissões no período", y="Município", orientation="h", color="Emissões no período", color_continuous_scale=["#cfe3da", PALETTE[0]])
-    figure.update_layout(height=370, margin=dict(l=0, r=0, t=20, b=0), xaxis_title="tCO₂e", yaxis_title=None, coloraxis_showscale=False)
+    figure = px.bar(
+        ranking,
+        x="Emissões no período",
+        y="Município",
+        orientation="h",
+        color="Emissões no período",
+        color_continuous_scale=["#cfe3da", PALETTE[0]],
+    )
+    figure.update_layout(
+        height=370,
+        margin=dict(l=0, r=0, t=20, b=0),
+        xaxis_title="tCO₂e",
+        yaxis_title=None,
+        coloraxis_showscale=False,
+    )
     st.plotly_chart(figure, width="stretch", config={"displayModeBar": False})
 
 st.markdown('<div class="section-label">Comparação municipal</div>', unsafe_allow_html=True)
-comparison_tab, map_tab, data_tab = st.tabs(["Séries selecionadas", "Mapa territorial", "Dados e indicadores"])
+comparison_tab, map_tab, data_tab = st.tabs(
+    ["Séries selecionadas", "Mapa territorial", "Dados e indicadores"]
+)
 
 with comparison_tab:
     selected_data = filtered[filtered["Município"].isin(selected_municipalities)]
     if selected_data.empty:
         st.info("Selecione pelo menos um município na barra lateral para visualizar as séries.")
     else:
-        figure = px.line(selected_data, x="Ano", y="Emissões", color="Município", markers=True, color_discrete_sequence=PALETTE)
-        figure.update_layout(height=430, margin=dict(l=0, r=0, t=20, b=0), yaxis_title="tCO₂e", xaxis_title=None, legend_title=None, hovermode="x unified")
+        figure = px.line(
+            selected_data,
+            x="Ano",
+            y="Emissões",
+            color="Município",
+            markers=True,
+            color_discrete_sequence=PALETTE,
+        )
+        figure.update_layout(
+            height=430,
+            margin=dict(l=0, r=0, t=20, b=0),
+            yaxis_title="tCO₂e",
+            xaxis_title=None,
+            legend_title=None,
+            hovermode="x unified",
+        )
         st.plotly_chart(figure, width="stretch", config={"displayModeBar": False})
-        st.caption(f"O recorte selecionado soma {format_tonnes(selected_total)} tCO₂e entre {selected_years[0]} e {selected_years[1]}.")
+        st.caption(
+            f"O recorte selecionado soma {format_tonnes(selected_total)} tCO₂e entre {selected_years[0]} e {selected_years[1]}."
+        )
 
 with map_tab:
     map_data = summary[summary["Município"].isin(selected_municipalities)].copy()
@@ -221,11 +280,35 @@ with map_tab:
         st.plotly_chart(figure, width="stretch", config={"displayModeBar": False})
 
 with data_tab:
-    view = summary[["Município", "Acumulado", "Variação no período", "População 2022", "IDHM 2010", "PIB per capita 2023"]].copy()
+    view = summary[
+        [
+            "Município",
+            "Acumulado",
+            "Variação no período",
+            "População 2022",
+            "IDHM 2010",
+            "PIB per capita 2023",
+        ]
+    ].copy()
     view = view.sort_values("Acumulado", ascending=False)
-    view.columns = ["Município", "Acumulado (tCO₂e)", "Variação 2010–2024 (%)", "População 2022", "IDHM 2010", "PIB per capita 2023 (R$)"]
+    view.columns = [
+        "Município",
+        "Acumulado (tCO₂e)",
+        "Variação 2010–2024 (%)",
+        "População 2022",
+        "IDHM 2010",
+        "PIB per capita 2023 (R$)",
+    ]
     st.dataframe(
-        view.style.format({"Acumulado (tCO₂e)": "{:,.0f}", "Variação 2010–2024 (%)": "{:.1f}", "População 2022": "{:,.0f}", "IDHM 2010": "{:.3f}", "PIB per capita 2023 (R$)": "R$ {:,.2f}"}),
+        view.style.format(
+            {
+                "Acumulado (tCO₂e)": "{:,.0f}",
+                "Variação 2010–2024 (%)": "{:.1f}",
+                "População 2022": "{:,.0f}",
+                "IDHM 2010": "{:.3f}",
+                "PIB per capita 2023 (R$)": "R$ {:,.2f}",
+            }
+        ),
         width="stretch",
         hide_index=True,
     )
@@ -233,4 +316,6 @@ with data_tab:
     st.download_button("Baixar tabela CSV", csv, "apermc-indicadores.csv", "text/csv")
 
 st.divider()
-st.caption(f"Dados exibidos: {min(YEARS)}–{max(YEARS)} · menor ano agregado no recorte: {int(period_low)} · atualização manual disponível na barra lateral")
+st.caption(
+    f"Dados exibidos: {min(YEARS)}–{max(YEARS)} · menor ano agregado no recorte: {int(period_low)} · atualização manual disponível na barra lateral"
+)
