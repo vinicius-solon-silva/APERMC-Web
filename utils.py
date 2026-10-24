@@ -1,4 +1,5 @@
-"""Pure utility functions for the APERMC-Web app.
+"""
+Pure utility functions for the APERMC-Web app.
 
 These functions are side-effect-free and do not depend on Streamlit,
 making them easy to unit-test.
@@ -53,10 +54,7 @@ def parse_brazilian_number(value: object) -> float:
     text = str(value).strip().replace("\u00a0", "")
     if not text:
         return float("nan")
-    if "," in text:
-        text = text.replace(".", "").replace(",", ".")
-    else:
-        text = text.replace(".", "")
+    text = text.replace(".", "").replace(",", ".") if "," in text else text.replace(".", "")
     return pd.to_numeric(text, errors="coerce")
 
 

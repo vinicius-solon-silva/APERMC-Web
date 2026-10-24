@@ -1,20 +1,18 @@
+import pandas as pd
+import plotly.express as px
+import streamlit as st
+
 from utils import (
     ANNUAL_SHEET,
-    BASE_URL,
     IBGE_SHEET,
     MUNICIPAL_COORDINATES,
     PALETTE,
     YEARS,
-    format_percent,
     format_tonnes,
     parse_brazilian_number,
     sheet_url,
     tidy_columns,
 )
-import pandas as pd
-import plotly.express as px
-import streamlit as st
-
 
 st.set_page_config(
     page_title="APERMC | Energia e clima",
@@ -63,7 +61,7 @@ def load_coordinates() -> pd.DataFrame:
         [
             {"Município": municipality, "Latitude": latitude, "Longitude": longitude}
             for municipality, (latitude, longitude) in MUNICIPAL_COORDINATES.items()
-        ]
+        ],
     )
 
 
@@ -177,13 +175,18 @@ metric_columns[2].metric("Ano de maior emissão", f"{int(period_peak)}")
 metric_columns[3].metric("Municípios destacados", f"{format_tonnes(selected_total)} tCO₂e")
 
 st.markdown(
-    '<div class="section-label">Leitura do período selecionado</div>', unsafe_allow_html=True
+    '<div class="section-label">Leitura do período selecionado</div>',
+    unsafe_allow_html=True,
 )
 left, right = st.columns([1.55, 1])
 with left:
     yearly = filtered.groupby("Ano", as_index=False)["Emissões"].sum()
     figure = px.area(
-        yearly, x="Ano", y="Emissões", markers=True, color_discrete_sequence=[PALETTE[0]]
+        yearly,
+        x="Ano",
+        y="Emissões",
+        markers=True,
+        color_discrete_sequence=[PALETTE[0]],
     )
     figure.update_traces(
         line_width=3,
@@ -192,7 +195,7 @@ with left:
     )
     figure.update_layout(
         height=370,
-        margin=dict(l=0, r=0, t=20, b=0),
+        margin={"l": 0, "r": 0, "t": 20, "b": 0},
         yaxis_title="tCO₂e",
         xaxis_title=None,
         hovermode="x unified",
@@ -210,7 +213,7 @@ with right:
     )
     figure.update_layout(
         height=370,
-        margin=dict(l=0, r=0, t=20, b=0),
+        margin={"l": 0, "r": 0, "t": 20, "b": 0},
         xaxis_title="tCO₂e",
         yaxis_title=None,
         coloraxis_showscale=False,
@@ -219,7 +222,7 @@ with right:
 
 st.markdown('<div class="section-label">Comparação municipal</div>', unsafe_allow_html=True)
 comparison_tab, map_tab, data_tab = st.tabs(
-    ["Séries selecionadas", "Mapa territorial", "Dados e indicadores"]
+    ["Séries selecionadas", "Mapa territorial", "Dados e indicadores"],
 )
 
 with comparison_tab:
@@ -237,7 +240,7 @@ with comparison_tab:
         )
         figure.update_layout(
             height=430,
-            margin=dict(l=0, r=0, t=20, b=0),
+            margin={"l": 0, "r": 0, "t": 20, "b": 0},
             yaxis_title="tCO₂e",
             xaxis_title=None,
             legend_title=None,
@@ -276,7 +279,9 @@ with map_tab:
             map_options["color_discrete_sequence"] = [PALETTE[0]]
 
         figure = px.scatter_map(map_data, **map_options)
-        figure.update_layout(margin=dict(l=0, r=0, t=0, b=0), coloraxis_colorbar_title="tCO₂e")
+        figure.update_layout(
+            margin={"l": 0, "r": 0, "t": 0, "b": 0}, coloraxis_colorbar_title="tCO₂e"
+        )
         st.plotly_chart(figure, width="stretch", config={"displayModeBar": False})
 
 with data_tab:
@@ -294,7 +299,7 @@ with data_tab:
     view.columns = [
         "Município",
         "Acumulado (tCO₂e)",
-        "Variação 2010–2024 (%)",
+        "Variação 2010-2024 (%)",
         "População 2022",
         "IDHM 2010",
         "PIB per capita 2023 (R$)",
@@ -303,7 +308,7 @@ with data_tab:
         view.style.format(
             {
                 "Acumulado (tCO₂e)": "{:,.0f}",
-                "Variação 2010–2024 (%)": "{:.1f}",
+                "Variação 2010-2024 (%)": "{:.1f}",
                 "População 2022": "{:,.0f}",
                 "IDHM 2010": "{:.3f}",
                 "PIB per capita 2023 (R$)": "R$ {:,.2f}",
@@ -317,5 +322,5 @@ with data_tab:
 
 st.divider()
 st.caption(
-    f"Dados exibidos: {min(YEARS)}–{max(YEARS)} · menor ano agregado no recorte: {int(period_low)} · atualização manual disponível na barra lateral"
+    f"Dados exibidos: {min(YEARS)}-{max(YEARS)} · menor ano agregado no recorte: {int(period_low)} · atualização manual disponível na barra lateral",
 )

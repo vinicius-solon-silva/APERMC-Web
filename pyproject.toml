@@ -29,7 +29,15 @@ ignore = [
     "T201",   # print() calls allowed (dev convenience)
     # Not needed for a single-file-style app
     "SIM102", # use a single if instead of nested
+    # These checks are incompatible with selected style/formatting or lack project policy
+    "COM812", # Ruff format already manages trailing commas
+    "CPY001", # No project copyright-header convention is defined
+    "D203",   # D211 is selected instead
+    "D212",   # D213 is selected instead
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = ["INP001", "S101"]
 
 [tool.ruff.format]
 quote-style = "double"
