@@ -121,10 +121,6 @@ def render_header() -> None:
     )
 
     with st.sidebar:
-        st.markdown("### APERMC-Web")
-        st.caption("Ana Paula Marsarioli · pesquisadora")
-        st.caption("Prof. Dr. André Luiz da Conceição · orientador")
-        st.divider()
         st.caption("Instituições parceiras")
         institutions = (
             ("FAPESP", "fapesp_logo.png", "https://fapesp.br/"),

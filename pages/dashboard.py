@@ -189,7 +189,7 @@ with map_tab:
             map_options.update(
                 size="Emissões no período",
                 color="Emissões no período",
-                color_continuous_scale=["#fff3b0", "#ffd166", "#f8961e", "#f94144", "#c1126b"],
+                color_continuous_scale=["#4f9d55", "#f4d35e", "#d7193f", "#9d174d"],
                 size_max=34,
             )
         else:

@@ -19,7 +19,7 @@ pages = [
     st.Page("pages/profile.py", title="Perfil e contato", icon=":material/person:"),
 ]
 
-page = st.navigation(pages, position="sidebar")
+page = st.navigation({"APERMC-Web": pages}, position="sidebar")
 render_header()
 page.run()
 render_footer()
