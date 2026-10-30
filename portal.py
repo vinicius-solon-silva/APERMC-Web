@@ -112,9 +112,8 @@ def render_header() -> None:
     st.markdown(
         """
         <header class="region-banner">
-          <div class="energy-label">Pesquisa de iniciação científica · setor de energia</div>
-          <h1>Região Metropolitana de Campinas</h1>
-          <p>Governança energética, emissões e mudanças climáticas</p>
+          <h1>APERMC-Web</h1>
+          <p>Análise das políticas de governança energética na mitigação e/ou adaptação às mudanças climáticas pelos municípios da Região Metropolitana de Campinas (RMC)</p>
         </header>
         """,
         unsafe_allow_html=True,
@@ -124,9 +123,9 @@ def render_header() -> None:
         st.caption("Instituições parceiras")
         institutions = (
             ("FAPESP", "fapesp_logo.png", "https://fapesp.br/"),
-            ("CPS", "cps_logo.png", "https://www.cps.sp.gov.br/"),
+            ("Centro Paula Souza", "cps_logo.png", "https://www.cps.sp.gov.br/"),
             (
-                "FATEC Campinas",
+                "Faculdade Tecnológica de Campinas",
                 "fatec-campinas_logo.png",
                 "https://fateccampinas.com.br/",
             ),
